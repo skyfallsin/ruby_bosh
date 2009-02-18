@@ -16,6 +16,11 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.1}
   s.summary = %q{A BOSH session pre-initializer for Ruby web applications}
+  
+  s.add_dependency("builder")
+  s.add_dependency("rest-client")
+  s.add_dependency("hpricot")
+  s.add_dependency("SystemTimer")
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
