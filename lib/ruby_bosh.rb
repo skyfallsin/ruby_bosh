@@ -3,6 +3,7 @@ require 'builder'
 require 'rexml/document'
 require 'base64'
 require 'hpricot'
+require 'system_timer'
 
 # based on
 # http://code.stanziq.com/svn/strophe/trunk/strophejs/examples/attach/boshclient.py
@@ -13,16 +14,32 @@ class RubyBOSHClient
   BIND_XMLNS    = 'urn:ietf:params:xml:ns:xmpp-bind'
   SESSION_XMLNS = 'urn:ietf:params:xml:ns:xmpp-session'
 
+  class Timeout < StandardError; end
+
   attr_accessor :jid, :rid, :sid, :success
-  def initialize(jid, pw, service_url) 
+  def initialize(jid, pw, service_url, opts={}) 
     @service_url = service_url
     @jid, @pw = jid, pw
     @host = jid.split("@").last
     @success = false
+    @timeout = opts[:timeout] || 3 #seconds 
     @headers = {"Content-Type" => "text/xml; charset=utf-8",
                 "Accept" => "text/xml"}
     connect
   end
+
+  def initialize_bosh_session 
+    response = deliver(construct_body(:wait => 5, :to => @host,
+                                      :hold => 3, :window => 5,
+                                      "xmpp:version" => '1.0'))
+    parse(response)
+  end
+
+  def success?
+    success == true
+  end
+
+  private
 
   def connect
     initialize_bosh_session
@@ -35,13 +52,6 @@ class RubyBOSHClient
     if @success
       @rid+=1 #send this directly to the browser
     end
-  end
-  
-  def initialize_bosh_session 
-    response = deliver(construct_body(:wait => 5, :to => @host,
-                                      :hold => 3, :window => 5,
-                                      "xmpp:version" => '1.0'))
-    parse(response)
   end
 
   def construct_body(params={}, &block)
@@ -65,7 +75,6 @@ class RubyBOSHClient
     end
 
     response = deliver(request)
-    # TODO: make the following more robust
     response.include?("success")
   end
 
@@ -108,14 +117,13 @@ class RubyBOSHClient
     _response
   end
 
-  def success?
-    success == true
-  end
-
-  private
   def deliver(xml)
-    send(xml)
-    recv(RestClient.post(@service_url, xml, @headers))
+    SystemTimer.timeout(@timeout) do 
+      send(xml)
+      recv(RestClient.post(@service_url, xml, @headers))
+    end
+  rescue SystemTimer::Error => e
+    raise RubyBOSHClient::Timeout, e.message
   end
 
   def send(msg)
@@ -129,8 +137,8 @@ end
 
 
 class RubyBOSH
-  def self.initialize_session(jid, pw, service_url)
-    conn = RubyBOSHClient.new(jid, pw, service_url)
+  def self.initialize_session(jid, pw, service_url, opts={})
+    conn = RubyBOSHClient.new(jid, pw, service_url, opts)
     if conn.success?
       [conn.jid, conn.sid, conn.rid]
     else
@@ -140,6 +148,6 @@ class RubyBOSH
 end
 
 if __FILE__ == $0
-  p RubyBOSH.initialize_session("skyfallsin@localhost", "skyfallsin", 
+  p RubyBOSH.initialize_session(ARGV[0], ARGV[1], 
       "http://localhost:5280/http-bind")
 end

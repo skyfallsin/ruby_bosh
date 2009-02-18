@@ -7,6 +7,11 @@ This method allows you to hide authentication details for your users' XMPP accou
 
 Tested on Rails 2.x with eJabberd 1.2+
 
+References
+==========
+BOSH: http://xmpp.org/extensions/xep-0124.html
+XMPP via BOSH: http://xmpp.org/extensions/xep-0206.html
+
 Example
 =======
 In your Ruby app controller (or equivalent):
