@@ -1,5 +1,23 @@
 ruby_bosh=========
-Description goes here.
+
+The RubyBOSH library handles creating and pre-authenticating BOSH streams inside your Ruby application before passing them off to your template engine.  
+
+Tested on Rails 2.x with eJabberd 1.2+
+
+Example
+=======
+In your Ruby app controller (or equivalent):
+
+@session_jid, @session_id, @session_random_id = 
+  RubyBOSH.initialize_session("me@jabber.org", "my_password", "http://localhost:5280/http-bind")
+
+In your template, you would then pass these directly to your javascript BOSH connector:
+
+var bosh_jid = '<%= @session_jid %>';
+var bosh_sid  = '<%= @session_id %>';
+var bosh_rid = '<%= @session_random_id %>';
+// using Strophe:
+connect.attach(bosh_jid, bosh_sid, bosh_rid, onConnectHandlerFunction); 
 
 COPYRIGHT
 =========
