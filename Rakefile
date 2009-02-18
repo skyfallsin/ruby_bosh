@@ -9,6 +9,11 @@ begin
     s.homepage = "http://github.com/skyfallsin/ruby_bosh"
     s.description = "TODO"
     s.authors = ["Pradeep Elankumaran"]
+    
+    s.add_dependency("builder")
+    s.add_dependency("rest-client")
+    s.add_dependency("hpricot")
+    s.add_dependency("SystemTimer")
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
