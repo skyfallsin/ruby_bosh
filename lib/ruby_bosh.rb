@@ -3,6 +3,7 @@ require 'builder'
 require 'rexml/document'
 require 'base64'
 require 'hpricot'
+require 'timeout'
 require 'system_timer'
 
 class RubyBOSH  
@@ -14,6 +15,7 @@ class RubyBOSH
 
   class Timeout < StandardError; end
   class AuthFailed < StandardError; end
+  class ConnFailed < StandardError; end
 
   attr_accessor :jid, :rid, :sid, :success
   def initialize(jid, pw, service_url, opts={}) 
@@ -124,8 +126,10 @@ class RubyBOSH
       send(xml)
       recv(RestClient.post(@service_url, xml, @headers))
     end
-  rescue Timeout::Error => e
-    raise RubyBOSHClient::Timeout, e.message
+  rescue ::Timeout::Error => e
+    raise RubyBOSH::Timeout, e.message
+  rescue Errno::ECONNREFUSED => e
+    raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
   end
 
   def send(msg)
