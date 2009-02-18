@@ -124,7 +124,7 @@ class RubyBOSH
       send(xml)
       recv(RestClient.post(@service_url, xml, @headers))
     end
-  rescue SystemTimer::Error => e
+  rescue Timeout::Error => e
     raise RubyBOSHClient::Timeout, e.message
   end
 
