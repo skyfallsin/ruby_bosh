@@ -5,9 +5,7 @@ require 'base64'
 require 'hpricot'
 require 'system_timer'
 
-# based on
-# http://code.stanziq.com/svn/strophe/trunk/strophejs/examples/attach/boshclient.py
-class RubyBOSHClient
+class RubyBOSH  
   BOSH_XMLNS    = 'http://jabber.org/protocol/httpbind'
   TLS_XMLNS     = 'urn:ietf:params:xml:ns:xmpp-tls'
   SASL_XMLNS    = 'urn:ietf:params:xml:ns:xmpp-sasl'
@@ -15,6 +13,7 @@ class RubyBOSHClient
   SESSION_XMLNS = 'urn:ietf:params:xml:ns:xmpp-session'
 
   class Timeout < StandardError; end
+  class AuthFailed < StandardError; end
 
   attr_accessor :jid, :rid, :sid, :success
   def initialize(jid, pw, service_url, opts={}) 
@@ -25,21 +24,15 @@ class RubyBOSHClient
     @timeout = opts[:timeout] || 3 #seconds 
     @headers = {"Content-Type" => "text/xml; charset=utf-8",
                 "Accept" => "text/xml"}
-    connect
-  end
-
-  def initialize_bosh_session 
-    response = deliver(construct_body(:wait => 5, :to => @host,
-                                      :hold => 3, :window => 5,
-                                      "xmpp:version" => '1.0'))
-    parse(response)
   end
 
   def success?
-    success == true
+    @success == true
   end
 
-  private
+  def self.initialize_session(*args)
+    new(*args).connect
+  end
 
   def connect
     initialize_bosh_session
@@ -49,9 +42,18 @@ class RubyBOSHClient
       @success = send_session_request
     end
 
-    if @success
-      @rid+=1 #send this directly to the browser
-    end
+    raise RubyBOSH::AuthFailed, "could not authenticate #{@jid}" unless success?
+    @rid += 1 #updates the rid for the next call from the browser
+    
+    [@jid, @sid, @rid]
+  end
+
+  private
+  def initialize_bosh_session 
+    response = deliver(construct_body(:wait => 5, :to => @host,
+                                      :hold => 3, :window => 5,
+                                      "xmpp:version" => '1.0'))
+    parse(response)
   end
 
   def construct_body(params={}, &block)
@@ -135,17 +137,6 @@ class RubyBOSHClient
   end
 end
 
-
-class RubyBOSH
-  def self.initialize_session(jid, pw, service_url, opts={})
-    conn = RubyBOSHClient.new(jid, pw, service_url, opts)
-    if conn.success?
-      [conn.jid, conn.sid, conn.rid]
-    else
-      [nil, nil, nil]
-    end
-  end
-end
 
 if __FILE__ == $0
   p RubyBOSH.initialize_session(ARGV[0], ARGV[1], 
