@@ -22,7 +22,7 @@ In your Ruby app controller (or equivalent):
 In your template, you would then pass these directly to your javascript BOSH connector:
 
 var bosh_jid = '<%= @session_jid %>';
-var bosh_sid  = '<%= @session_id %>';
+var bosh_sid = '<%= @session_id %>';
 var bosh_rid = '<%= @session_random_id %>';
 
 // using Strophe:
