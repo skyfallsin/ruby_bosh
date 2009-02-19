@@ -12,6 +12,7 @@ class RubyBOSH
   SASL_XMLNS    = 'urn:ietf:params:xml:ns:xmpp-sasl'
   BIND_XMLNS    = 'urn:ietf:params:xml:ns:xmpp-bind'
   SESSION_XMLNS = 'urn:ietf:params:xml:ns:xmpp-session'
+  CLIENT_XMLNS  = 'jabber:client'
 
   class Timeout < StandardError; end
   class AuthFailed < StandardError; end
@@ -103,7 +104,7 @@ class RubyBOSH
 
   def send_session_request
     request = construct_body(:sid => @sid) do |body|
-      body.iq(:xmlns => "jabber:client", :type => "set",
+      body.iq(:xmlns => CLIENT_XMLNS, :type => "set",
               :id => "sess_#{rand(100000)}") do |iq|
         iq.session(:xmlns => SESSION_XMLNS)
       end 
