@@ -14,9 +14,10 @@ class RubyBOSH
   SESSION_XMLNS = 'urn:ietf:params:xml:ns:xmpp-session'
   CLIENT_XMLNS  = 'jabber:client'
 
-  class Timeout < StandardError; end
-  class AuthFailed < StandardError; end
-  class ConnFailed < StandardError; end
+  class Error < StandardError; end
+  class Timeout < RubyBOSH::Error; end
+  class AuthFailed < RubyBOSH::Error; end
+  class ConnFailed < RubyBOSH::Error; end
 
   @@logging = true
   def self.logging=(value)

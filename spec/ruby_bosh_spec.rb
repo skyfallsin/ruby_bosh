@@ -49,5 +49,9 @@ describe RubyBOSH do
       SystemTimer.stub!(:timeout).and_raise(::Timeout::Error)
       lambda { @rbosh.connect }.should raise_error(RubyBOSH::Timeout)
     end
+
+    after(:each) do
+      lambda { @rbosh.connect }.should raise_error(RubyBOSH::Error)
+    end
   end
 end
