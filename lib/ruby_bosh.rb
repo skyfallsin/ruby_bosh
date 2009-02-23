@@ -18,6 +18,11 @@ class RubyBOSH
   class AuthFailed < StandardError; end
   class ConnFailed < StandardError; end
 
+  @@logging = true
+  def self.logging=(value)
+    @@logging = value
+  end
+
   attr_accessor :jid, :rid, :sid, :success
   def initialize(jid, pw, service_url, opts={}) 
     @service_url = service_url
@@ -134,11 +139,11 @@ class RubyBOSH
   end
 
   def send(msg)
-    puts "Ruby-BOSH - SEND\n#{msg}"; msg
+    puts("Ruby-BOSH - SEND\n#{msg}") if @@logging; msg
   end
 
   def recv(msg)
-    puts "Ruby-BOSH - RECV\n#{msg}"; msg
+    puts("Ruby-BOSH - RECV\n#{msg}") if @logging; msg
   end
 end
 
