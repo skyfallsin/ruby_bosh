@@ -69,7 +69,9 @@ class RubyBOSH
     @rid ? @rid+=1 : @rid=rand(100000)
 
     builder = Builder::XmlMarkup.new
-    parameters = {:rid => @rid, :xmlns => BOSH_XMLNS}.merge(params)
+    parameters = {:rid => @rid, :xmlns => BOSH_XMLNS,
+                  "xmpp:version" => "1.0", 
+                  "xmlns:xmpp" => "urn:xmpp:xbosh"}.merge(params)
 
     if block_given?
       builder.body(parameters) {|body| yield(body)}
