@@ -101,7 +101,7 @@ class RubyBOSH
       body.iq(:id => "bind_#{rand(100000)}", :type => "set", 
               :xmlns => "jabber:client") do |iq|
         iq.bind(:xmlns => BIND_XMLNS) do |bind|
-          bind.resource('presently')
+          bind.resource("bosh_#{rand(10000})")
         end
       end
     end
