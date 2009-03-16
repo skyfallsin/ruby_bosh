@@ -139,6 +139,8 @@ class RubyBOSH
     raise RubyBOSH::Timeout, e.message
   rescue Errno::ECONNREFUSED => e
     raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
+  rescue Exception => e
+    raise RubyBOSH::Error, e.message
   end
 
   def send(msg)

@@ -50,6 +50,13 @@ describe RubyBOSH do
       lambda { @rbosh.connect }.should raise_error(RubyBOSH::Timeout)
     end
 
+    it "should crash with a generic error on any other problem" do
+      [RestClient::ServerBrokeConnection, RestClient::RequestTimeout].each{|err|
+        RestClient.stub!(:post).and_raise(err)
+        lambda { @rbosh.connect }.should raise_error(RubyBOSH::Error)
+      }
+    end
+
     after(:each) do
       lambda { @rbosh.connect }.should raise_error(RubyBOSH::Error)
     end
