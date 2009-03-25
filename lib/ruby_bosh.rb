@@ -33,6 +33,9 @@ class RubyBOSH
     @timeout = opts[:timeout] || 3 #seconds 
     @headers = {"Content-Type" => "text/xml; charset=utf-8",
                 "Accept" => "text/xml"}
+    @wait    = opts[:wait]   || 5
+    @hold    = opts[:hold]   || 3
+    @window  = opts[:window] || 5
   end
 
   def success?
@@ -59,8 +62,8 @@ class RubyBOSH
 
   private
   def initialize_bosh_session 
-    response = deliver(construct_body(:wait => 5, :to => @host,
-                                      :hold => 3, :window => 5,
+    response = deliver(construct_body(:wait => @wait, :to => @host,
+                                      :hold => @hold, :window => @window,
                                       "xmpp:version" => '1.0'))
     parse(response)
   end
