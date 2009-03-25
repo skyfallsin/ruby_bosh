@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruby_bosh}
-  s.version = "0.5.2"
+  s.version = "0.5.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pradeep Elankumaran"]
-  s.date = %q{2009-03-15}
+  s.date = %q{2009-03-25}
   s.description = %q{TODO}
   s.email = %q{pradeep@intridea.com}
   s.files = ["VERSION.yml", "lib/ruby_bosh.rb", "spec/ruby_bosh_spec.rb", "spec/spec_helper.rb"]
