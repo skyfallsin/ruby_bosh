@@ -11,7 +11,7 @@ begin
     s.authors = ["Pradeep Elankumaran"]
     
     s.add_dependency("builder")
-    s.add_dependency("rest-client")
+    s.add_dependency("adamwiggins-rest-client")
     s.add_dependency("hpricot")
     s.add_dependency("SystemTimer")
   end
