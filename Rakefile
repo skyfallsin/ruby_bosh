@@ -7,7 +7,7 @@ begin
     s.summary = %Q{A BOSH session pre-initializer for Ruby web applications}
     s.email = "pradeep@intridea.com"
     s.homepage = "http://github.com/skyfallsin/ruby_bosh"
-    s.description = "TODO"
+    s.description = "An XMPP BOSH session pre-initializer for Ruby web applications"
     s.authors = ["Pradeep Elankumaran"]
     
     s.add_dependency("builder")
