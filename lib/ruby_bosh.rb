@@ -147,11 +147,16 @@ class RubyBOSH
   end
 
   def send(msg)
-    puts("Ruby-BOSH - SEND\n#{msg}") if @@logging; msg
+    puts("Ruby-BOSH - SEND\n[#{now}]: #{msg}") if @@logging; msg
   end
 
   def recv(msg)
-    puts("Ruby-BOSH - RECV\n#{msg}") if @logging; msg
+    puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @logging; msg
+  end
+
+  private
+  def now 
+    Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
 end
 
