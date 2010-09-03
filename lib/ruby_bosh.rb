@@ -126,7 +126,7 @@ class RubyBOSH
   end
 
   def parse(_response)
-    doc = Hpricot(_response)
+    doc = Hpricot(_response.to_s)
     doc.search("//body").each do |body|
       @sid = body.attributes["sid"].to_s
     end
