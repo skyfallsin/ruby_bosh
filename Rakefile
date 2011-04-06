@@ -13,7 +13,7 @@ begin
     s.add_dependency("builder")
     s.add_dependency("rest-client")
     s.add_dependency("hpricot")
-    s.add_dependency("SystemTimer")
+    s.add_dependency("SystemTimer") unless RUBY_VERSION =~ /1\.9/
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
