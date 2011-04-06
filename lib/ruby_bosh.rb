@@ -4,7 +4,7 @@ require 'rexml/document'
 require 'base64'
 require 'hpricot'
 require 'timeout'
-require 'system_timer'
+require 'system_timer' unless RUBY_VERSION =~ /1\.9/
 
 class RubyBOSH  
   BOSH_XMLNS    = 'http://jabber.org/protocol/httpbind'
