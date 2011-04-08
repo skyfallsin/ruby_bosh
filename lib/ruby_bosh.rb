@@ -133,8 +133,20 @@ class RubyBOSH
     _response
   end
 
+  def timeout(secs, &block)
+    if defined?(SystemTimer)
+      SystemTimer.timeout(secs) do
+        block.call
+      end
+    else
+      ::Timeout::timeout(secs) do
+        block.call
+      end
+    end
+  end
+
   def deliver(xml)
-    SystemTimer.timeout(@timeout) do 
+    timeout(@timeout) do
       send(xml)
       recv(RestClient.post(@service_url, xml, @headers))
     end
@@ -151,7 +163,7 @@ class RubyBOSH
   end
 
   def recv(msg)
-    puts("Ruby-BOSH - RECV\n#{msg}") if @logging; msg
+    puts("Ruby-BOSH - RECV\n#{msg}") if @@logging; msg
   end
 end
 
