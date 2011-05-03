@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruby_bosh}
-  s.version = "0.6.1"
+  s.version = "0.7.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pradeep Elankumaran"]
-  s.date = %q{2011-03-17}
+  s.date = %q{2011-05-03}
   s.description = %q{An XMPP BOSH session pre-initializer for Ruby web applications}
   s.email = %q{pradeep@intridea.com}
   s.extra_rdoc_files = [
@@ -45,15 +45,18 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<builder>, [">= 0"])
       s.add_runtime_dependency(%q<rest-client>, [">= 0"])
       s.add_runtime_dependency(%q<hpricot>, [">= 0"])
+      s.add_runtime_dependency(%q<SystemTimer>, [">= 0"])
     else
       s.add_dependency(%q<builder>, [">= 0"])
       s.add_dependency(%q<rest-client>, [">= 0"])
       s.add_dependency(%q<hpricot>, [">= 0"])
+      s.add_dependency(%q<SystemTimer>, [">= 0"])
     end
   else
     s.add_dependency(%q<builder>, [">= 0"])
     s.add_dependency(%q<rest-client>, [">= 0"])
     s.add_dependency(%q<hpricot>, [">= 0"])
+    s.add_dependency(%q<SystemTimer>, [">= 0"])
   end
 end
 
