@@ -3,8 +3,6 @@ require 'builder'
 require 'rexml/document'
 require 'base64'
 require 'hpricot'
-require 'timeout'
-require 'system_timer'
 
 class RubyBOSH  
   BOSH_XMLNS    = 'http://jabber.org/protocol/httpbind'
@@ -133,25 +131,49 @@ class RubyBOSH
     _response
   end
 
-  def deliver(xml)
-    SystemTimer.timeout(@timeout) do 
-      send(xml)
-      recv(RestClient.post(@service_url, xml, @headers))
+  begin
+    require 'system_timer'
+    def deliver(xml)
+      SystemTimer.timeout(@timeout) do 
+        send(xml)
+        recv(RestClient.post(@service_url, xml, @headers))
+      end
+    rescue ::Timeout::Error => e
+      raise RubyBOSH::Timeout, e.message
+    rescue Errno::ECONNREFUSED => e
+      raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
+    rescue Exception => e
+      raise RubyBOSH::Error, e.message
     end
-  rescue ::Timeout::Error => e
-    raise RubyBOSH::Timeout, e.message
-  rescue Errno::ECONNREFUSED => e
-    raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
-  rescue Exception => e
-    raise RubyBOSH::Error, e.message
+  rescue LoadError
+    warn "WARNING: using the built-in Timeout class which is known to have issues when used for opening connections. Install the SystemTimer gem if you want to make sure the Redis client will not hang." unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
+
+    require "timeout"
+    def deliver(xml)
+      Timeout.timeout(@timeout) do 
+        send(xml)
+        recv(RestClient.post(@service_url, xml, @headers))
+      end
+    rescue ::Timeout::Error => e
+      raise RubyBOSH::Timeout, e.message
+    rescue Errno::ECONNREFUSED => e
+      raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
+    rescue Exception => e
+      raise RubyBOSH::Error, e.message
+    end
   end
 
   def send(msg)
-    puts("Ruby-BOSH - SEND\n#{msg}") if @@logging; msg
+    puts("Ruby-BOSH - SEND\n[#{now}]: #{msg}") if @@logging; msg
   end
 
   def recv(msg)
-    puts("Ruby-BOSH - RECV\n#{msg}") if @logging; msg
+    puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @logging; msg
+  end
+
+  private
+  def now 
+    Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
 end
 
