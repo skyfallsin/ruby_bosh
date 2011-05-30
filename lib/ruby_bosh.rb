@@ -13,7 +13,7 @@ class RubyBOSH
   CLIENT_XMLNS  = 'jabber:client'
 
   class Error < StandardError; end
-  class Timeout < RubyBOSH::Error; end
+  class TimeoutError < RubyBOSH::Error; end
   class AuthFailed < RubyBOSH::Error; end
   class ConnFailed < RubyBOSH::Error; end
 
@@ -138,8 +138,8 @@ class RubyBOSH
         send(xml)
         recv(RestClient.post(@service_url, xml, @headers))
       end
-    rescue ::Timeout::Error => e
-      raise RubyBOSH::Timeout, e.message
+    rescue Timeout::Error => e
+      raise RubyBOSH::TimeoutError, e.message
     rescue Errno::ECONNREFUSED => e
       raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
     rescue Exception => e
@@ -154,8 +154,8 @@ class RubyBOSH
         send(xml)
         recv(RestClient.post(@service_url, xml, @headers))
       end
-    rescue ::Timeout::Error => e
-      raise RubyBOSH::Timeout, e.message
+    rescue Timeout::Error => e
+      raise RubyBOSH::TimeoutError, e.message
     rescue Errno::ECONNREFUSED => e
       raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
     rescue Exception => e
