@@ -15,7 +15,7 @@ class RubyBOSH
   CLIENT_XMLNS  = 'jabber:client'
 
   class Error < StandardError; end
-  class Timeout < RubyBOSH::Error; end
+  class TimeoutError < RubyBOSH::Error; end
   class AuthFailed < RubyBOSH::Error; end
   class ConnFailed < RubyBOSH::Error; end
 
@@ -126,7 +126,7 @@ class RubyBOSH
   end
 
   def parse(_response)
-    doc = Hpricot(_response)
+    doc = Hpricot(_response.to_s)
     doc.search("//body").each do |body|
       @sid = body.attributes["sid"].to_s
     end
@@ -139,6 +139,7 @@ class RubyBOSH
         block.call
       end
     else
+      warn "WARNING: using the built-in Timeout class which is known to have issues when used for opening connections. Install the SystemTimer gem if you want to make sure the Redis client will not hang." unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
       ::Timeout::timeout(secs) do
         block.call
       end
@@ -151,7 +152,7 @@ class RubyBOSH
       recv(RestClient.post(@service_url, xml, @headers))
     end
   rescue ::Timeout::Error => e
-    raise RubyBOSH::Timeout, e.message
+    raise RubyBOSH::TimeoutError, e.message
   rescue Errno::ECONNREFUSED => e
     raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
   rescue Exception => e
@@ -159,11 +160,16 @@ class RubyBOSH
   end
 
   def send(msg)
-    puts("Ruby-BOSH - SEND\n#{msg}") if @@logging; msg
+    puts("Ruby-BOSH - SEND\n[#{now}]: #{msg}") if @@logging; msg
   end
 
   def recv(msg)
-    puts("Ruby-BOSH - RECV\n#{msg}") if @@logging; msg
+    puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @@logging; msg
+  end
+
+  private
+  def now 
+    Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
 end
 

@@ -46,8 +46,8 @@ describe RubyBOSH do
     end
 
     it "should raise a Timeout::Error if the BOSH call takes forever" do
-      SystemTimer.stub!(:timeout).and_raise(::Timeout::Error)
-      lambda { @rbosh.connect }.should raise_error(RubyBOSH::Timeout)
+      SystemTimer.stub!(:timeout).and_raise(Timeout::Error)
+      lambda { @rbosh.connect }.should raise_error(RubyBOSH::TimeoutError)
     end
 
     it "should crash with a generic error on any other problem" do
