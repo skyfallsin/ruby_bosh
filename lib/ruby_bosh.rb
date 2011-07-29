@@ -50,21 +50,21 @@ class RubyBOSH
     new(*args).connect
   end
 
-  def connect
-    initialize_bosh_session
-    if send_auth_request 
-      @success = send_restart_request
-      unless @@fast_mode
-        request_resource_binding
-        @success = send_session_request
-      end
-    end
+  def connect
+    initialize_bosh_session
+    if send_auth_request
+      @success = send_restart_request
+      unless @@fast_mode
+        request_resource_binding
+        @success = send_session_request
+      end
+    end
 
-    raise RubyBOSH::AuthFailed, "could not authenticate #{@jid}" unless success?
-    @rid += 1 #updates the rid for the next call from the browser
-    
-    [@jid, @sid, @rid]
-  end
+    raise RubyBOSH::AuthFailed, "count not authenticate #{@jid}" unless success?
+    @rid += 1 #updates the rid for the next call from the browser
+
+    [@jid, @sid, @rid]
+  end
 
   def send_presence
     request = construct_body(:sid => @sid) do |body|
