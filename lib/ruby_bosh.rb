@@ -66,6 +66,19 @@ class RubyBOSH
     [@jid, @sid, @rid]
   end
 
+  def send_presence
+    request = construct_body(:sid => @sid) do |body|
+      body.presence(:from => @jid, :xmlns => "jabber:client") do |p|
+        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "http://psi-im.org/caps", :ver => "0.12", :ext => "cs ep-notify html")
+        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "urn:xmpp:microblog", :ver => "0.01", :ext => "cs ep-notify html")
+        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "urn:xmpp:microblog+notify", :ver => "0.01", :ext => "cs ep-notify html")
+        p.priority(5)
+      end
+    end
+
+    response = deliver(request)
+  end
+
   private
   def initialize_bosh_session 
     response = deliver(construct_body(:wait => @wait, :to => @host,
