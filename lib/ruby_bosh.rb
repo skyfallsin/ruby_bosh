@@ -20,8 +20,12 @@ class RubyBOSH
   class ConnFailed < RubyBOSH::Error; end
 
   @@logging = true
+  @@fast_mode = false
   def self.logging=(value)
     @@logging = value
+  end
+  def self.fast_mode=(value)
+    @@fast_mode = value
   end
 
   attr_accessor :jid, :rid, :sid, :success
@@ -46,19 +50,21 @@ class RubyBOSH
     new(*args).connect
   end
 
-  def connect
-    initialize_bosh_session
-    if send_auth_request 
-      send_restart_request
-      request_resource_binding
-      @success = send_session_request
-    end
+  def connect
+    initialize_bosh_session
+    if send_auth_request 
+      @success = send_restart_request
+      unless @@fast_mode
+        request_resource_binding
+        @success = send_session_request
+      end
+    end
 
-    raise RubyBOSH::AuthFailed, "could not authenticate #{@jid}" unless success?
-    @rid += 1 #updates the rid for the next call from the browser
-    
-    [@jid, @sid, @rid]
-  end
+    raise RubyBOSH::AuthFailed, "could not authenticate #{@jid}" unless success?
+    @rid += 1 #updates the rid for the next call from the browser
+    
+    [@jid, @sid, @rid]
+  end
 
   private
   def initialize_bosh_session 
