@@ -66,34 +66,17 @@ class RubyBOSH
     [@jid, @sid, @rid]
   end
 
-  def connect_and_presence
-    initialize_bosh_session
-    if send_auth_request
-      @success = send_restart_request
-      unless @@fast_mode
-        request_resource_binding
-        @success = send_session_request
-      end
-      send_presence
+  def deliver(xml)
+    timeout(@timeout) do
+      send(xml)
+      recv(RestClient.post(@service_url, xml, @headers))
     end
-
-    raise RubyBOSH::AuthFailed, "count not authenticate #{@jid}" unless success?
-    @rid += 1 #updates the rid for the next call from the browser
-
-    [@jid, @sid, @rid]
-  end
-
-  def send_presence
-    request = construct_body(:sid => @sid) do |body|
-      body.presence(:from => @jid, :xmlns => "jabber:client") do |p|
-        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "http://psi-im.org/caps", :ver => "0.12", :ext => "cs ep-notify html")
-        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "urn:xmpp:microblog", :ver => "0.01", :ext => "cs ep-notify html")
-        p.c(:xmlns => "http://jabber.org/protocol/caps", :node => "urn:xmpp:microblog+notify", :ver => "0.01", :ext => "cs ep-notify html")
-        p.priority(5)
-      end
-    end
-
-    response = deliver(request)
+  rescue ::Timeout::Error => e
+    raise RubyBOSH::TimeoutError, e.message
+  rescue Errno::ECONNREFUSED => e
+    raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
+  rescue Exception => e
+    raise RubyBOSH::Error, e.message
   end
 
   private
@@ -182,19 +165,6 @@ class RubyBOSH
     end
   end
 
-  def deliver(xml)
-    timeout(@timeout) do
-      send(xml)
-      recv(RestClient.post(@service_url, xml, @headers))
-    end
-  rescue ::Timeout::Error => e
-    raise RubyBOSH::TimeoutError, e.message
-  rescue Errno::ECONNREFUSED => e
-    raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
-  rescue Exception => e
-    raise RubyBOSH::Error, e.message
-  end
-
   def send(msg)
     puts("Ruby-BOSH - SEND\n[#{now}]: #{msg}") if @@logging; msg
   end
@@ -203,7 +173,6 @@ class RubyBOSH
     puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @@logging; msg
   end
 
-  private
   def now 
     Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
