@@ -28,9 +28,9 @@ class RubyBOSH
     # Extract the resource if present
     split_jid = jid.split("/")
     @jid = split_jid.first
-    @custom_resource = @jid.last if split_jid.length > 1
+    @custom_resource = split_jid.last if split_jid.length > 1
     @pw = pw
-    @host = jid.split("@").last
+    @host = @jid.split("@").last
     @success = false
     @timeout = opts[:timeout] || 3 #seconds 
     @headers = {"Content-Type" => "text/xml; charset=utf-8",
@@ -187,7 +187,6 @@ class RubyBOSH
       @custom_resource
     end
   end
-
 end
 
 
