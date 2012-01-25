@@ -22,10 +22,14 @@ class RubyBOSH
     @@logging = value
   end
 
-  attr_accessor :jid, :rid, :sid, :success
+  attr_accessor :jid, :rid, :sid, :success , :custom_resource
   def initialize(jid, pw, service_url, opts={}) 
     @service_url = service_url
-    @jid, @pw = jid, pw
+    # Extract the resource if present
+    split_jid = jid.split("/")
+    @jid = split_jid.first
+    @custom_resource = @jid.last if split_jid.length > 1
+    @pw = pw
     @host = jid.split("@").last
     @success = false
     @timeout = opts[:timeout] || 3 #seconds 
@@ -102,7 +106,7 @@ class RubyBOSH
       body.iq(:id => "bind_#{rand(100000)}", :type => "set", 
               :xmlns => "jabber:client") do |iq|
         iq.bind(:xmlns => BIND_XMLNS) do |bind|
-          bind.resource("bosh_#{rand(10000)}")
+          bind.resource(resource_name)
         end
       end
     end
@@ -175,6 +179,15 @@ class RubyBOSH
   def now 
     Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
+
+  def resource_name
+    if @custom_resource.nil?
+      "bosh_#{rand(10000)}"
+    else
+      @custom_resource
+    end
+  end
+
 end
 
 
