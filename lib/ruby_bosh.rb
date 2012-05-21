@@ -3,6 +3,8 @@ require 'builder'
 require 'rexml/document'
 require 'base64'
 require 'hpricot'
+require 'timeout'
+require 'system_timer' unless RUBY_VERSION =~ /1\.9/
 
 class RubyBOSH  
   BOSH_XMLNS    = 'http://jabber.org/protocol/httpbind'
@@ -13,13 +15,17 @@ class RubyBOSH
   CLIENT_XMLNS  = 'jabber:client'
 
   class Error < StandardError; end
-  class Timeout < RubyBOSH::Error; end
+  class TimeoutError < RubyBOSH::Error; end
   class AuthFailed < RubyBOSH::Error; end
   class ConnFailed < RubyBOSH::Error; end
 
   @@logging = true
+  @@fast_mode = false
   def self.logging=(value)
     @@logging = value
+  end
+  def self.fast_mode=(value)
+    @@fast_mode = value
   end
 
   attr_accessor :jid, :rid, :sid, :success , :custom_resource
@@ -50,16 +56,31 @@ class RubyBOSH
 
   def connect
     initialize_bosh_session
-    if send_auth_request 
-      send_restart_request
-      request_resource_binding
-      @success = send_session_request
+    if send_auth_request
+      @success = send_restart_request
+      unless @@fast_mode
+        request_resource_binding
+        @success = send_session_request
+      end
     end
 
-    raise RubyBOSH::AuthFailed, "could not authenticate #{@jid}" unless success?
+    raise RubyBOSH::AuthFailed, "count not authenticate #{@jid}" unless success?
     @rid += 1 #updates the rid for the next call from the browser
-    
+
     [@jid, @sid, @rid]
+  end
+
+  def deliver(xml)
+    timeout(@timeout) do
+      send(xml)
+      recv(RestClient.post(@service_url, xml, @headers))
+    end
+  rescue ::Timeout::Error => e
+    raise RubyBOSH::TimeoutError, e.message
+  rescue Errno::ECONNREFUSED => e
+    raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
+  rescue Exception => e
+    raise RubyBOSH::Error, e.message
   end
 
   private
@@ -135,35 +156,16 @@ class RubyBOSH
     _response
   end
 
-  begin
-    require 'system_timer'
-    def deliver(xml)
-      SystemTimer.timeout(@timeout) do 
-        send(xml)
-        recv(RestClient.post(@service_url, xml, @headers))
+  def timeout(secs, &block)
+    if defined?(SystemTimer)
+      SystemTimer.timeout(secs) do
+        block.call
       end
-    rescue ::Timeout::Error => e
-      raise RubyBOSH::Timeout, e.message
-    rescue Errno::ECONNREFUSED => e
-      raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
-    rescue Exception => e
-      raise RubyBOSH::Error, e.message
-    end
-  rescue LoadError
-    warn "WARNING: using the built-in Timeout class which is known to have issues when used for opening connections. Install the SystemTimer gem if you want to make sure the Redis client will not hang." unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
-
-    require "timeout"
-    def deliver(xml)
-      Timeout.timeout(@timeout) do 
-        send(xml)
-        recv(RestClient.post(@service_url, xml, @headers))
+    else
+      warn "WARNING: using the built-in Timeout class which is known to have issues when used for opening connections. Install the SystemTimer gem if you want to make sure the Redis client will not hang." unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
+      ::Timeout::timeout(secs) do
+        block.call
       end
-    rescue ::Timeout::Error => e
-      raise RubyBOSH::Timeout, e.message
-    rescue Errno::ECONNREFUSED => e
-      raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
-    rescue Exception => e
-      raise RubyBOSH::Error, e.message
     end
   end
 
@@ -172,10 +174,9 @@ class RubyBOSH
   end
 
   def recv(msg)
-    puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @logging; msg
+    puts("Ruby-BOSH - RECV\n[#{now}]: #{msg}") if @@logging; msg
   end
 
-  private
   def now 
     Time.now.strftime("%a %b %d %H:%M:%S %Y")
   end
