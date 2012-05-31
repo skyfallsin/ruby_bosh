@@ -45,18 +45,24 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<builder>, [">= 0"])
       s.add_runtime_dependency(%q<rest-client>, [">= 0"])
       s.add_runtime_dependency(%q<hpricot>, [">= 0"])
-      s.add_runtime_dependency(%q<SystemTimer>, [">= 0"])
+      if RUBY_VERSION < "1.9"
+        s.add_runtime_dependency(%q<SystemTimer>, [">= 0"])
+      end
     else
       s.add_dependency(%q<builder>, [">= 0"])
       s.add_dependency(%q<rest-client>, [">= 0"])
       s.add_dependency(%q<hpricot>, [">= 0"])
-      s.add_dependency(%q<SystemTimer>, [">= 0"])
+      if RUBY_VERSION < "1.9"
+        s.add_dependency(%q<SystemTimer>, [">= 0"])
+      end
     end
   else
     s.add_dependency(%q<builder>, [">= 0"])
     s.add_dependency(%q<rest-client>, [">= 0"])
     s.add_dependency(%q<hpricot>, [">= 0"])
-    s.add_dependency(%q<SystemTimer>, [">= 0"])
+    if RUBY_VERSION < "1.9"
+      s.add_dependency(%q<SystemTimer>, [">= 0"])
+    end
   end
 end
 
