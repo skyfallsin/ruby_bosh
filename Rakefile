@@ -5,7 +5,7 @@ begin
   Jeweler::Tasks.new do |s|
     s.name = "ruby_bosh"
     s.summary = %Q{A BOSH session pre-initializer for Ruby web applications}
-    s.email = "pradeep@intridea.com"
+    s.email = "pradeepe@gmail.com"
     s.homepage = "http://github.com/skyfallsin/ruby_bosh"
     s.description = "An XMPP BOSH session pre-initializer for Ruby web applications"
     s.authors = ["Pradeep Elankumaran"]
@@ -19,7 +19,7 @@ rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = 'ruby_bosh'
