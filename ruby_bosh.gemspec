@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "mikemarsian-ruby_bosh"
-  s.version = "0.13.1"
+  s.version = "0.13.2"
 
   s.require_paths = ["lib"]
   s.authors = ["Original author: Pradeep Elankumaran. Update for ruby 2: Mike Polischuk"]
@@ -9,12 +9,12 @@ Gem::Specification.new do |s|
   s.email = "mike@polischuk.com"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README"
+    "README.md"
   ]
   s.licenses = ['MIT']
   s.files = [
     "LICENSE",
-    "README",
+    "README.md",
     "Rakefile",
     "autotest/discover.rb",
     "lib/ruby_bosh.rb",
