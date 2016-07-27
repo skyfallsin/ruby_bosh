@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "mikemarsian-ruby_bosh"
-  s.version = "0.13.3"
+  s.version = "0.13.4"
 
   s.require_paths = ["lib"]
   s.authors = ["Original author: Pradeep Elankumaran. Update for ruby 2: Mike Polischuk"]

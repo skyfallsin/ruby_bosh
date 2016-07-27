@@ -9,6 +9,7 @@ Tested on Rails 4.2, Ruby 2.1.2 with eJabberd 16.04
 ## References
 
 BOSH: http://xmpp.org/extensions/xep-0124.html
+
 XMPP via BOSH: http://xmpp.org/extensions/xep-0206.html
 
 ## Example
@@ -39,6 +40,12 @@ var bosh_rid = '<%= @session_random_id %>';
 ``` js
 // using Strophe:
 connect.attach(bosh_jid, bosh_sid, bosh_rid, onConnectHandlerFunction);
+
+// using ConverseJS:
+converse.initialize({
+        jid: bosh_jid, sid: bosh_sid, rid: bosh_rid
+        // ... the rest of the initialization data
+  })
 ```
 
 ## Acknowledgements
