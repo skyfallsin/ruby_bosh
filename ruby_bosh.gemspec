@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "mikemarsian-ruby_bosh"
-  s.version = "0.13"
+  s.version = "0.13.1"
 
   s.require_paths = ["lib"]
   s.authors = ["Original author: Pradeep Elankumaran. Update for ruby 2: Mike Polischuk"]
@@ -9,16 +9,13 @@ Gem::Specification.new do |s|
   s.email = "mike@polischuk.com"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README",
-    "TODO"
+    "README"
   ]
   s.licenses = ['MIT']
   s.files = [
     "LICENSE",
     "README",
     "Rakefile",
-    "TODO",
-    "VERSION.yml",
     "autotest/discover.rb",
     "lib/ruby_bosh.rb",
     "ruby_bosh.gemspec",
@@ -27,7 +24,7 @@ Gem::Specification.new do |s|
   ]
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.homepage = "http://github.com/mikemarsian/ruby_bosh"
-  s.summary = "A BOSH session pre-initializer for Ruby web applications (for Ruby 2)"
+  s.summary = "A BOSH session pre-initializer for Ruby web applications (for Ruby 2+)"
   s.required_ruby_version = '>= 1.9.3'
 
   s.add_development_dependency "bundler", "~> 1.10"
