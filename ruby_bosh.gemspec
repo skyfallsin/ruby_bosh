@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
-  s.name = "ruby_bosh"
-  s.version = "0.12"
+  s.name = "mikemarsian-ruby_bosh"
+  s.version = "0.13"
 
   s.require_paths = ["lib"]
   s.authors = ["Original author: Pradeep Elankumaran. Update for ruby 2: Mike Polischuk"]
-  s.date = "2016-06-13"
+  s.date = "2016-07-27"
   s.description = "An XMPP BOSH session pre-initializer for Ruby web applications"
-  s.email = "pradeepe@gmail.com"
+  s.email = "mike@polischuk.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README",
