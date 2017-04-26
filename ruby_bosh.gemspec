@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec_junit_formatter", '0.2.2'
 
   s.add_dependency "builder", "~> 3.0"
-  s.add_dependency "rest-client" , "~> 1.8"
+  s.add_dependency "rest-client" , ">= 1.8"
   s.add_dependency "hpricot", "~> 0.8"
 
 end
