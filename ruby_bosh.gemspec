@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "mikemarsian-ruby_bosh"
-  s.version = "0.13.4"
+  s.version = "0.13.5"
 
   s.require_paths = ["lib"]
   s.authors = ["Original author: Pradeep Elankumaran. Update for ruby 2: Mike Polischuk"]
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
     "spec/spec_helper.rb"
   ]
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
-  s.homepage = "http://github.com/mikemarsian/ruby_bosh"
+  s.homepage = "https://github.com/mikemarsian/ruby_bosh"
   s.summary = "A BOSH session pre-initializer for Ruby web applications (for Ruby 2+)"
   s.required_ruby_version = '>= 1.9.3'
 
