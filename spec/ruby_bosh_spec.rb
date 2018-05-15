@@ -29,7 +29,7 @@ describe RubyBOSH do
     s.should be_kind_of(Array)
     s.size.should == 3
     s.first.should == 'skyfallsin@localhost' 
-    s.last.should be_kind_of(Fixnum)
+    s.last.should be_kind_of(Integer)
     s[1].should == '123456'
   end
 
