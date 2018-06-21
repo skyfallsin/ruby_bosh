@@ -136,22 +136,6 @@ class RubyBOSH
   end
 
   begin
-    require 'system_timer'
-    def deliver(xml)
-      SystemTimer.timeout(@timeout) do 
-        send(xml)
-        recv(RestClient.post(@service_url, xml, @headers))
-      end
-    rescue Timeout::Error => e
-      raise RubyBOSH::TimeoutError, e.message
-    rescue Errno::ECONNREFUSED => e
-      raise RubyBOSH::ConnFailed, "could not connect to #{@host}\n#{e.message}"
-    rescue Exception => e
-      raise RubyBOSH::Error, e.message
-    end
-  rescue LoadError
-    warn "WARNING: using the built-in Timeout class which is known to have issues when used for opening connections. Install the SystemTimer gem if you want to make sure the Redis client will not hang." unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
-
     require "timeout"
     def deliver(xml)
       ::Timeout.timeout(@timeout) do 

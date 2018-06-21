@@ -5,13 +5,12 @@ describe RubyBOSH do
     RubyBOSH.logging = false
     @rbosh = RubyBOSH.new("skyfallsin@localhost", "skyfallsin",
                           "http://localhost:5280/http-bind")
-    #@rbosh.stub!(:success?).and_return(true)
-    #@rbosh.stub!(:initialize_bosh_session).and_return(true)
-    @rbosh.stub!(:send_auth_request).and_return(true)
-    @rbosh.stub!(:send_restart_request).and_return(true)
-    @rbosh.stub!(:request_resource_binding).and_return(true)
-    @rbosh.stub!(:send_session_request).and_return(true)
-    RestClient.stub!(:post).and_return("<body sid='123456'></body>")
+
+    @rbosh.stub(:send_auth_request).and_return(true)
+    @rbosh.stub(:send_restart_request).and_return(true)
+    @rbosh.stub(:request_resource_binding).and_return(true)
+    @rbosh.stub(:send_session_request).and_return(true)
+    RestClient.stub(:post).and_return("<body sid='123456'></body>")
   end
 
   it "should set the sid attribute after the session creation request" do
@@ -30,29 +29,24 @@ describe RubyBOSH do
     s.should be_kind_of(Array)
     s.size.should == 3
     s.first.should == 'skyfallsin@localhost' 
-    s.last.should be_kind_of(Fixnum)
+    s.last.should be_kind_of(Integer)
     s[1].should == '123456'
   end
 
   describe "Errors" do
     it "should crash with AuthFailed when its not a success?" do
-      @rbosh.stub!(:send_session_request).and_return(false)
+      @rbosh.stub(:send_session_request).and_return(false)
       lambda { @rbosh.connect }.should raise_error(RubyBOSH::AuthFailed)
     end
 
     it "should raise a ConnFailed if a connection could not be made to the XMPP server" do
-      RestClient.stub!(:post).and_raise(Errno::ECONNREFUSED)
+      RestClient.stub(:post).and_raise(Errno::ECONNREFUSED)
       lambda { @rbosh.connect }.should raise_error(RubyBOSH::ConnFailed)
-    end
-
-    it "should raise a Timeout::Error if the BOSH call takes forever" do
-      SystemTimer.stub!(:timeout).and_raise(Timeout::Error)
-      lambda { @rbosh.connect }.should raise_error(RubyBOSH::TimeoutError)
     end
 
     it "should crash with a generic error on any other problem" do
       [RestClient::ServerBrokeConnection, RestClient::RequestTimeout].each{|err|
-        RestClient.stub!(:post).and_raise(err)
+        RestClient.stub(:post).and_raise(err)
         lambda { @rbosh.connect }.should raise_error(RubyBOSH::Error)
       }
     end
